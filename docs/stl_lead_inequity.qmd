@@ -1,0 +1,53 @@
+---
+title: "Day 1 Activities"
+format: html
+editor: visual
+---
+
+```{r, echo=FALSE}
+library(tidyverse)
+library(janitor)
+library(ggplot2)
+```
+
+Read and Explore the Data
+
+```{r, include=FALSE}
+#read in data
+stl_lead <- read_csv('stl_blood_lead(1).csv') %>% 
+  clean_names()
+```
+
+```{r}
+#overview
+skimr::skim(stl_lead)
+
+dim(stl_lead)
+names(stl_lead)
+```
+
+```{r}
+#create a new column
+prop_white <- (stl_lead$white/stl_lead$total_pop)*100
+#bind dataframes
+stl_lead_prop <- cbind(stl_lead, prop_white)
+
+
+```
+
+Create a Scatterplot
+
+```{r, fig.width = 12, fig.height = 5}
+#create a scatterplot
+stl_lead_plot <- ggplot(data = stl_lead_prop, aes(x=pct_elevated, y = prop_white)) + geom_point(alpha=0.4) + theme(axis.text.x=element_text(angle=-90)) + labs(x='% of Children with Elevated Blood Levels', y='% Identification as White')
+stl_lead_plot 
+ggsave(here::here('figs','stl_lead_plot.png'))
+```
+
+Create a Histogram
+
+```{r}
+stl_lead_hist <- ggplot(stl_lead_prop, aes(x=pct_elevated)) +geom_histogram(color='blue',fill='lightblue') + labs(x='% of Children with Elevated Blood Levels', y='Count')
+stl_lead_hist
+ggsave(here::here('figs','stl_lead_hist.png'))
+```
